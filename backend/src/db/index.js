@@ -9,7 +9,7 @@ const connectDB = async () => {
         console.log(`/n MongoDB connected! DB port: ${connectionInstance.connection.port}`)
         console.log(`/n MongoDB connected ! DB Name : ${connectionInstance.connection.name}`)
         console.log(`/n MongoDB connected ! DB readyState: ${connectionInstance.connection.readyState}`)
-        console.log(`/n MongoDB connected! DB connection String ${connectionInstance.connection.client.s.url}`)
+        
 
 
     } catch (error) {
