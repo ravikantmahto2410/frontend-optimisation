@@ -12,7 +12,8 @@ export interface FilterOption {
 }
 
 export interface FilterState {
-  mod350: FilterOption[];
-  mod8000: FilterOption[];
-  mod20002: FilterOption[];
-}
+    number: FilterOption[]
+    mod350: FilterOption[];
+    mod8000: FilterOption[];
+    mod20002: FilterOption[];
+    }

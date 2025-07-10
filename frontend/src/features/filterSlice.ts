@@ -5,6 +5,7 @@ import type { FilterOption, FilterState } from "../types/index.ts";
 
 
 const initialState: FilterState = {
+    number:[],
     mod350:[],
     mod8000: [],
     mod20002: [],
