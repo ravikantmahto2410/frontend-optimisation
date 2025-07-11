@@ -7,4 +7,4 @@ const dataSchema = new Schema({
     mod20002: { type: Number, required: true },
 })
 
-export const Data = mongoose.model("Data",dataSchema )
+export const Data = mongoose.model("Data",dataSchema,"Data" )

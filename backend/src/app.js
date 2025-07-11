@@ -11,11 +11,11 @@ app.use(express.json());
 
 // import routes
 import healthcheckRouter from "./routes/healthcheck.routes.js"
-import filterdata from "./routes/data.routes.js"
+import dataRouter from "./routes/data.routes.js"
 
 
 //routes
 app.use("/api/v1/healthcheck", healthcheckRouter)
-app.use("/api/v1/data",filterdata)
+app.use("/api/v1/data",dataRouter)
 
 export {app}
