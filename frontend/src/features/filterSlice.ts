@@ -4,6 +4,8 @@ import type { FilterOption, FilterState } from "../types/index.ts";
 import type { RootState } from "../store/store.ts";
 import type { DataRow } from "../types/index.ts";
 import axios from 'axios'
+import type { ApiResponse } from "../types/index.ts";
+import  type{ FilterPayload } from "../types/index.ts";
 
 interface FilterStateWithData extends FilterState {
   data: DataRow[];
@@ -50,7 +52,7 @@ export const fetchData = createAsyncThunk(
             });
         }
 
-        const response = await axios.get(`http://localhost:8000/api/v1/data/filterdata?page=${page}&limit=100`);
+        const response = await axios.get(`http://localhost:8000/api/v1/data/filterdata?${queryParams}`);
         return response.data.data as ApiResponse;
     } catch (error) {
       return rejectWithValue((error as Error).message);
