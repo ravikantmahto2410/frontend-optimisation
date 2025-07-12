@@ -1,55 +1,72 @@
 import { createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { FilterOption, FilterState } from "../types/index.ts";
+import type { RootState } from "../store/store.ts";
+import type { DataRow } from "../types/index.ts";
+import axios from 'axios'
 
-
-
-// const initialState: FilterState = {
-//     number:[],
-//     mod350:[],
-//     mod8000: [],
-//     mod20002: [],
-// };
-
-export interface dataState{
-    data:[] | null,
-    loading: boolean,
-    error: string | null
+interface FilterStateWithData extends FilterState {
+  data: DataRow[];
+  totalRows: number;
+  loading: boolean;
+  error: string | null;
+  currentPage: number;
 }
 
-const initialState: dataState = {
-    data : [],
+const initialState: FilterStateWithData = {
+    number: [],
+    mod350: [],
+    mod8000: [],
+    mod20002: [],
+    data: [],
+    totalRows: 0,
     loading: false,
-    error:""
-}
+    error: null,
+    currentPage: 1,
+};
 
 
-const getData = createAsyncThunk('filters', async() => {
-     return fetch(`http://localhost:8000/api/v1/data/filterdata?page=1&limit=100`)
-    .then(res => res.json())
-})
+export const fetchData = createAsyncThunk(
+  'filters/fetchData',
+  async (page: number, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/v1/data/filterdata?page=${page}&limit=100`);
+      return response.data.data; // { data, totalRows, page, limit }
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+
 
 export const filterSlice = createSlice({
     name: 'filters',
     initialState,
-    reducers: {},
+    reducers: {
+        setCurrentPage: (state, action: PayloadAction<number>) => {
+            state.currentPage = action.payload;
+        },
+    },
     extraReducers(builder){
         builder
-        .addCase(getData.pending,(state)=>{
+        .addCase(fetchData.pending,(state)=>{
             state.loading = true
+            state.error = null;
         })
-        .addCase(getData.fulfilled,(state,action) => {
-            state.loading = false
-            state.error = null
-            state.data=action.payload
+        .addCase(fetchData.fulfilled,(state,action) => {
+            state.loading = false;
+            state.data = action.payload.data;
+            state.totalRows = action.payload.totalRows;
         })
-        .addCase(getData.rejected,(state,action:PayloadAction<any>) => {
+        .addCase(fetchData.rejected,(state,action) => {
             state.loading = false
-            state.error = null
-            state.data = []
+            state.error = action.payload as string;
+            
         })
     }
 })
 
+export const { setCurrentPage } = filterSlice.actions;
 
 export default filterSlice.reducer
