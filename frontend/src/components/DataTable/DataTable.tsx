@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import DataTable from 'react-data-table-component';
 import  type { TableColumn } from "react-data-table-component";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import type { DataRow } from "../../types";
 import type { RootState } from "../../store/store";
 import { useSelector } from "react-redux";
@@ -9,20 +10,17 @@ import { fetchData,setCurrentPage } from "../../features/filterSlice";
 
 const columns: TableColumn<DataRow>[] = [
     { name: 'Number', selector: (row: DataRow) => row.number, sortable: true },
-  { name: 'Mod350', selector: (row: DataRow) => row.mod350, sortable: true },
-  { name: 'Mod8000', selector: (row: DataRow) => row.mod8000, sortable: true },
-  { name: 'Mod20002', selector: (row: DataRow) => row.mod20002, sortable: true },
+    { name: 'Mod350', selector: (row: DataRow) => row.mod350, sortable: true },
+    { name: 'Mod8000', selector: (row: DataRow) => row.mod8000, sortable: true },
+    { name: 'Mod20002', selector: (row: DataRow) => row.mod20002, sortable: true },
 
 ]
-
-
-
 
 const DataTableComponent : React.FC = () => {
     // const filters = useSelector((state: RootState) => state.filters);
     // const [page, setPage] = useState(1);
     // const [tableData, setTableData] = useState<DataRow[]>(data);
-    const dispatch = useDispatch()
+    const dispatch =  useAppDispatch()
     const {data, totalRows, loading, error, currentPage} = useSelector((state: RootState) => state.filters);
 
     useEffect(() => {
@@ -44,7 +42,7 @@ const DataTableComponent : React.FC = () => {
                 onChangePage={(page) => dispatch(setCurrentPage(page))}
                 paginationPerPage={100}
                 paginationRowsPerPageOptions={[100]}
-                currentPage={currentPage}
+                
                 progressPending={loading}
                 fixedHeader
                 fixedHeaderScrollHeight="400px"

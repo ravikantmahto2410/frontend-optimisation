@@ -38,7 +38,7 @@ const App: React.FC = () => {
             />
           ))}
       </div>
-      <DataTableComponent data={data} totalRows={totalRows}/>
+      <DataTableComponent/>
     </div>
   )
 }
