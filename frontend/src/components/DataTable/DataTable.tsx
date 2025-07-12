@@ -21,11 +21,25 @@ const DataTableComponent : React.FC = () => {
     // const [page, setPage] = useState(1);
     // const [tableData, setTableData] = useState<DataRow[]>(data);
     const dispatch =  useAppDispatch()
-    const {data, totalRows, loading, error, currentPage} = useSelector((state: RootState) => state.filters);
+    const {data, totalRows, loading, error, currentPage,number, 
+        mod350, 
+        mod8000, 
+        mod20002} = useAppSelector((state: RootState) => state.filters);
+
+    const currentFilters = {
+        number,
+        mod350,
+        mod8000,
+        mod20002
+    };
 
     useEffect(() => {
-        dispatch(fetchData(currentPage));
-    }, [currentPage, dispatch]);
+        dispatch(fetchData({ page: currentPage, filters: currentFilters }));
+    }, [currentPage,number, mod350, mod8000, mod20002, dispatch]);
+
+    const handlePageChange = (page: number) => {
+        dispatch(setCurrentPage(page));
+    };
 
     if (error) {
         return <div className="p-4 text-red-600">{error}</div>;
@@ -39,7 +53,7 @@ const DataTableComponent : React.FC = () => {
                 selectableRows
                 paginationServer
                 paginationTotalRows = {totalRows}
-                onChangePage={(page) => dispatch(setCurrentPage(page))}
+                onChangePage={handlePageChange}
                 paginationPerPage={100}
                 paginationRowsPerPageOptions={[100]}
                 
@@ -49,6 +63,11 @@ const DataTableComponent : React.FC = () => {
                 highlightOnHover
                 responsive
                 striped
+                noDataComponent={
+                    <div className="p-4 text-gray-500">
+                        No data available
+                    </div>
+                }
             />
         </div>
     )

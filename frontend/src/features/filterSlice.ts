@@ -11,6 +11,7 @@ interface FilterStateWithData extends FilterState {
   loading: boolean;
   error: string | null;
   currentPage: number;
+  filterOptions: FilterState;
 }
 
 const initialState: FilterStateWithData = {
@@ -23,22 +24,51 @@ const initialState: FilterStateWithData = {
     loading: false,
     error: null,
     currentPage: 1,
+    filterOptions: {
+        number: [],
+        mod350: [],
+        mod8000: [],
+        mod20002: [],
+    },
 };
 
 
 export const fetchData = createAsyncThunk(
   'filters/fetchData',
-  async (page: number, { rejectWithValue }) => {
+  async (params:{page: number;filters?:FilterState}, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/v1/data/filterdata?page=${page}&limit=100`);
-      return response.data.data; // { data, totalRows, page, limit }
+        const queryParams = new URLSearchParams(); 
+        queryParams.append('page', params.page.toString());
+        queryParams.append('limit', '100');
+
+        if (params.filters) {
+            Object.entries(params.filters).forEach(([key, values]) => {
+                if (values.length > 0) {
+                    const filterValues = values.map(v => v.value).join(',');
+                    queryParams.append(key, filterValues);
+                }
+            });
+        }
+
+        const response = await axios.get(`http://localhost:8000/api/v1/data/filterdata?page=${page}&limit=100`);
+        return response.data.data as ApiResponse;
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }
   }
 );
 
-
+export const fetchFilterOptions = createAsyncThunk(
+    'filters/fetchFilterOptions',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/v1/data/all-filter-options');
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue((error as Error).message);
+        }
+    }
+);
 
 export const filterSlice = createSlice({
     name: 'filters',
@@ -46,6 +76,18 @@ export const filterSlice = createSlice({
     reducers: {
         setCurrentPage: (state, action: PayloadAction<number>) => {
             state.currentPage = action.payload;
+        },
+        setFilters: (state, action: PayloadAction<FilterPayload>) => {
+            const { column, values } = action.payload;
+            state[column] = values;
+            state.currentPage = 1; 
+        },
+        clearFilters: (state) => {
+            state.number = [];
+            state.mod350 = [];
+            state.mod8000 = [];
+            state.mod20002 = [];
+            state.currentPage = 1;
         },
     },
     extraReducers(builder){
@@ -64,9 +106,21 @@ export const filterSlice = createSlice({
             state.error = action.payload as string;
             
         })
+        .addCase(fetchFilterOptions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchFilterOptions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.filterOptions = action.payload;
+            })
+            .addCase(fetchFilterOptions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
     }
 })
 
-export const { setCurrentPage } = filterSlice.actions;
+export const { setCurrentPage,setFilters, clearFilters } = filterSlice.actions;
 
 export default filterSlice.reducer

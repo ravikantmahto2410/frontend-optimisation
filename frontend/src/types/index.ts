@@ -7,8 +7,8 @@ export interface DataRow {
 
 
 export interface FilterOption {
-  name: string;
   value: number;
+  label: string;
 }
 
 export interface FilterState {
@@ -16,4 +16,17 @@ export interface FilterState {
     mod350: FilterOption[];
     mod8000: FilterOption[];
     mod20002: FilterOption[];
+}
+
+
+export interface ApiResponse {
+    data: DataRow[];
+    totalRows: number;
+    page: number;
+    limit: number;
+}
+
+export interface FilterPayload {
+    column: keyof FilterState;
+    values: FilterOption[];
 }
