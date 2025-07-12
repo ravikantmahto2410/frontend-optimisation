@@ -44,7 +44,7 @@ export const fetchData = createAsyncThunk(
         queryParams.append('limit', '100');
 
         if (params.filters) {
-            Object.entries(params.filters).forEach(([key, values]) => {
+            (Object.entries(params.filters) as [string, FilterOption[]][]).forEach(([key, values]) => {
                 if (values.length > 0) {
                     const filterValues = values.map(v => v.value).join(',');
                     queryParams.append(key, filterValues);
