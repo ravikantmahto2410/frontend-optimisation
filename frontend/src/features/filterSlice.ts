@@ -6,6 +6,9 @@ import axios from 'axios'
 import type { ApiResponse } from "../types/index.ts";
 import  type{ FilterPayload } from "../types/index.ts";
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+
+
 interface FilterStateWithData extends FilterState {
   data: DataRow[];
   totalRows: number;
@@ -51,7 +54,7 @@ export const fetchData = createAsyncThunk(
             });
         }
 
-        const response = await axios.get(`https://frontend-optimisation-backend.onrender.com/api/v1/data/filterdata?${queryParams}`);
+        const response = await axios.get(`${backendUrl}/api/v1/data/filterdata?${queryParams}`);
         return response.data.data as ApiResponse;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -63,7 +66,7 @@ export const fetchFilterOptions = createAsyncThunk(
     'filters/fetchFilterOptions',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get('https://frontend-optimisation-backend.onrender.com/api/v1/data/all-filter-options');
+            const response = await axios.get(`${backendUrl}/api/v1/data/all-filter-options`);
             
             return response.data.data;
         } catch (error) {
