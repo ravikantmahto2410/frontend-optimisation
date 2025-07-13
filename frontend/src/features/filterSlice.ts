@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { FilterOption, FilterState } from "../types/index.ts";
-import type { RootState } from "../store/store.ts";
 import type { DataRow } from "../types/index.ts";
 import axios from 'axios'
 import type { ApiResponse } from "../types/index.ts";
