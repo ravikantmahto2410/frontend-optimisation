@@ -2,12 +2,9 @@
 import './App.css'
 import DataTableComponent from './components/DataTable/DataTable'
 import FilterDropdown from './components/Filters/FilterDropDown';
-import type { DataRow,FilterState } from './types/index';
-import React,{useState, useMemo, useEffect} from 'react';
-import { useDispatch } from 'react-redux';
-import  type { RootState } from './store/store';
-import { useSelector } from 'react-redux';
-import { Placeholder } from 'react-select/animated';
+import type {FilterState } from './types/index';
+import React,{ useEffect} from 'react';
+
 import { useAppDispatch,useAppSelector } from './app/hooks';
 import { fetchFilterOptions,clearFilters } from './features/filterSlice';
 
@@ -15,7 +12,7 @@ const App: React.FC = () => {
 
   
   const dispatch = useAppDispatch();
-  const { filterOptions, loading } = useAppSelector((state) => state.filters);
+  const { filterOptions } = useAppSelector((state) => state.filters);
 
 
   const filterColumns: (keyof FilterState)[] = ['number','mod350', 'mod8000', 'mod20002'];

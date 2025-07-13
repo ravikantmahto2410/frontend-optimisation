@@ -4,8 +4,7 @@ import  type { TableColumn } from "react-data-table-component";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import type { DataRow } from "../../types";
 import type { RootState } from "../../store/store";
-import { useSelector } from "react-redux";
-import { useDispatch} from "react-redux";
+
 import { fetchData,setCurrentPage } from "../../features/filterSlice";
 
 const columns: TableColumn<DataRow>[] = [
