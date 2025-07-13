@@ -46,8 +46,8 @@ const filterOptions = asyncHandler(async(req, res) => {
         console.log(`Getting options for column: ${column}, Query:`, JSON.stringify(query, null, 2));
 
         const distinctValues = await Data.find(query).distinct(column);
-
-        const options = distinctValues.map((value) => ({
+        const sortedValues = distinctValues.sort((a, b) => a - b);
+        const options = sortedValues.map((value) => ({
             value: value,
             label: value.toString()
         }));
@@ -68,69 +68,42 @@ const filterOptions = asyncHandler(async(req, res) => {
 
 
 const getAllFilterOptions = asyncHandler(async (req, res) => {
-    const { number, mod350, mod8000, mod20002 } = req.query;
-    
     try {
-        // Build base queries for each column
-        const queries = {
-            number: {},
-            mod350: {},
-            mod8000: {},
-            mod20002: {}
-        };
-        
-        // For each column, exclude its own filter but include others
-        if (mod350) queries.number.mod350 = { $in: mod350.split(',').map(Number) };
-        if (mod8000) queries.number.mod8000 = { $in: mod8000.split(',').map(Number) };
-        if (mod20002) queries.number.mod20002 = { $in: mod20002.split(',').map(Number) };
-        
-        if (number) queries.mod350.number = { $in: number.split(',').map(Number) };
-        if (mod8000) queries.mod350.mod8000 = { $in: mod8000.split(',').map(Number) };
-        if (mod20002) queries.mod350.mod20002 = { $in: mod20002.split(',').map(Number) };
-        
-        if (number) queries.mod8000.number = { $in: number.split(',').map(Number) };
-        if (mod350) queries.mod8000.mod350 = { $in: mod350.split(',').map(Number) };
-        if (mod20002) queries.mod8000.mod20002 = { $in: mod20002.split(',').map(Number) };
-        
-        if (number) queries.mod20002.number = { $in: number.split(',').map(Number) };
-        if (mod350) queries.mod20002.mod350 = { $in: mod350.split(',').map(Number) };
-        if (mod8000) queries.mod20002.mod8000 = { $in: mod8000.split(',').map(Number) };
-        
-        // Execute all queries in parallel for better performance
-        const [numberOptions, mod350Options, mod8000Options, mod20002Options] = await Promise.all([
-            Data.find(queries.number).distinct('number'),
-            Data.find(queries.mod350).distinct('mod350'),
-            Data.find(queries.mod8000).distinct('mod8000'),
-            Data.find(queries.mod20002).distinct('mod20002')
+        // Get distinct values for each column that actually exist in the database
+        const [numberValues, mod350Values, mod8000Values, mod20002Values] = await Promise.all([
+            Data.distinct('number'),
+            Data.distinct('mod350'),
+            Data.distinct('mod8000'),
+            Data.distinct('mod20002')
         ]);
-        
-        // Format options for frontend
-        const formatOptions = (values) => {
-            return values.sort((a, b) => a - b).map(value => ({
-                value: value,
-                label: value.toString()
-            }));
+
+        const filterOptions = {
+            number: numberValues
+                .sort((a, b) => a - b)
+                .map(val => ({ value: val, label: val.toString() })),
+            mod350: mod350Values
+                .sort((a, b) => a - b)
+                .map(val => ({ value: val, label: val.toString() })),
+            mod8000: mod8000Values
+                .sort((a, b) => a - b)
+                .map(val => ({ value: val, label: val.toString() })),
+            mod20002: mod20002Values
+                .sort((a, b) => a - b)
+                .map(val => ({ value: val, label: val.toString() }))
         };
-        
-        const allOptions = {
-            number: formatOptions(numberOptions),
-            mod350: formatOptions(mod350Options),
-            mod8000: formatOptions(mod8000Options),
-            mod20002: formatOptions(mod20002Options)
-        };
-        
-        console.log("All filter options retrieved:", {
-            number: allOptions.number.length,
-            mod350: allOptions.mod350.length,
-            mod8000: allOptions.mod8000.length,
-            mod20002: allOptions.mod20002.length
+
+        console.log('Filter options counts:', {
+            number: filterOptions.number.length,
+            mod350: filterOptions.mod350.length,
+            mod8000: filterOptions.mod8000.length,
+            mod20002: filterOptions.mod20002.length
         });
-        
-        return res.status(200).json(
-            new ApiResponse(200, allOptions, "All filter options retrieved successfully")
+
+        res.status(200).json(
+            new ApiResponse(200, filterOptions, "All filter options retrieved successfully")
         );
     } catch (error) {
-        console.log("Error occurred while fetching all options", error);
+        console.log("Error occurred while fetching all filter options", error);
         throw new ApiError(500, "Something went wrong while fetching all filter options");
     }
 });

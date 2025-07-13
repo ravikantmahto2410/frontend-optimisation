@@ -65,7 +65,10 @@ export const fetchFilterOptions = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axios.get('http://localhost:8000/api/v1/data/all-filter-options');
-            return response.data.data;
+            
+            const allData =  response.data.data;
+            console.log(allData)
+            return allData
         } catch (error) {
             return rejectWithValue((error as Error).message);
         }
