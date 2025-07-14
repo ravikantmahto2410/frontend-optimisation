@@ -6,7 +6,7 @@ import axios from 'axios'
 import type { ApiResponse } from "../types/index.ts";
 import  type{ FilterPayload } from "../types/index.ts";
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+const backendUrl = "https://frontend-optimisation-backend-server.onrender.com"
 
 
 interface FilterStateWithData extends FilterState {
